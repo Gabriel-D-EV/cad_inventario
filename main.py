@@ -40,8 +40,12 @@ framef = Frame(janela, width=1045, height=300, bg=co1, relief=FLAT)
 framef.grid(row=2, column=0, pady=0, padx=1, sticky=NSEW)
 
 #imagem]
-app_img = Image.open('images/list.png')
-app_img = app_img.
+app_img = Image.open('imagens/list.png')
+app_img = app_img.resize((45,45))
+app_img = ImageTk.PhotoImage(app_img)
+
+logo = Label(frameh,image=app_img, text=' Inventário!', width=900, compound=LEFT, relief=RAISED, anchor=NW, font=('Arial 20 bold'), bg=co4, fg=co3)
+logo.place(x=0,y=0)
 
 janela.mainloop()
 
