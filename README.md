@@ -1,2 +1,2 @@
 # cad_inventario
- um Inventariom 
+ um Inventario
