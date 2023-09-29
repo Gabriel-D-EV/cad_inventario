@@ -1,9 +1,14 @@
 from tkinter import *
 from tkinter import Tk, StringVar
 from tkinter import ttk
+from tkinter import messagebox
 from PIL import Image, ImageTk
 from tkcalendar import Calendar, DateEntry
 from datetime import date
+from tkinter import filedialog as fd
+
+#import view
+from view import *
 
 
 
@@ -39,6 +44,56 @@ framem.grid(row=1, column=0, pady=1, padx=0, sticky=NSEW)
 
 framef = Frame(janela, width=1045, height=320, bg=co0, relief=FLAT)
 framef.grid(row=2, column=0, pady=0, padx=1, sticky=NSEW)
+
+#BACK-END
+global tree
+
+#inserir
+def inserir():
+    global img, img_str, l_img
+
+    nome = enome.get()
+    desc = edesc.get()
+    marca = emarca.get()
+    data = edata.get()
+    valor = evalor.get()
+    img = img_str
+
+    lst_inserir = [nome, desc, marca, data, valor, img]
+
+    for i in lst_inserir:
+        if i == '':
+            messagebox.showerror('Erro','Preencha todos os campos')
+            return
+
+    inserir_form(lst_inserir)
+    messagebox.showinfo('Sucesso','Dados inseridos')
+
+    enome.delete(0,'end')
+    edesc.delete(0,'end')
+    emarca.delete(0,'end') 
+    edata.delete(0,'end')
+    evalor.delete(0,'end') 
+   
+    mostrar()
+
+#escolher img
+
+global img, img_str, l_img
+    
+def escolher_img():
+    global img, img_str, l_img
+
+    img = fd.askopenfilename()
+    img_str = img
+
+    img = Image.open(img)
+    img = img.resize((150,150))
+    img = ImageTk.PhotoImage(img)
+    
+    l_img = Label(framem,image=img, bg=co4, fg=co3)
+    l_img.place(x=615,y=10)
+
 
 #FRAMEH
 #imagem
@@ -103,11 +158,11 @@ evalor.place(x=100, y=132)
 limg = Label(framem, text='Imagem:', height=1, anchor=NW, font=('Arial 10 bold'), bg=co0, fg=co3)
 limg.place(x=12,y=160)
 
-bimg = Button(framem, width=22, text='Carregar Imagem', height=1, compound=CENTER, anchor=CENTER, overrelief=RIDGE, font=('Arial 8 bold'), bg=co4, fg=co3)
+bimg = Button(framem, width=22, command=escolher_img, text='Carregar Imagem', height=1, compound=CENTER, anchor=CENTER, overrelief=RIDGE, font=('Arial 8 bold'), bg=co4, fg=co3)
 bimg.place(x=100,y=162)
 
 #botao adicionar
-badd = Button(framem, image=add_img, width=105, text='   Adicionar', height=20, compound=LEFT, anchor=NW, overrelief=RIDGE, font=('Arial 8 bold'), bg=co2, fg=co4)
+badd = Button(framem, command=inserir, image=add_img, width=105, text='   Adicionar', height=20, compound=LEFT, anchor=NW, overrelief=RIDGE, font=('Arial 8 bold'), bg=co2, fg=co4)
 badd.place(x=12,y=194)
 
 #botao atualizar
@@ -138,52 +193,59 @@ ltotq1 = Label(framem, text='  Quantidade de Itens:              ', height=1, an
 ltotq1.place(x=380,y=100)
 
 #tabela do banco de dados
-tabela_head = ['#Item','Nome', 'Descrição', 'Marca', 'Data', 'Valor']
+def mostrar():
+    tabela_head = ['#Item','Nome', 'Descrição', 'Marca', 'Data', 'Valor']
 
-lista_itens = []
-
-global tree
-
-tree = ttk.Treeview(framef, selectmode="extended",columns=tabela_head, show="headings")
-
-# vertical scrollbar
-vsb = ttk.Scrollbar(framef, orient="vertical", command=tree.yview)
-
-# horizontal scrollbar
-hsb = ttk.Scrollbar(framef, orient="horizontal", command=tree.xview)
-
-tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
-tree.grid(column=0, row=0, sticky='nsew')
-vsb.grid(column=1, row=0, sticky='ns')
-hsb.grid(column=0, row=1, sticky='ew')
-framef.grid_rowconfigure(0, weight=12)
-
-hd=["center","center","center","center","center","center"]
-h=[60,160,170,150,120,120]
-n=0
-
-for col in tabela_head:
-    tree.heading(col, text=col.title(), anchor=CENTER)
-    tree.column(col, width=h[n],anchor=hd[n])
-    n+=1
+    lista_itens = ver_form()
 
 
-# inserindo os itens dentro da tabela
-for item in lista_itens:
-    tree.insert('', 'end', values=item)
+
+    tree = ttk.Treeview(framef, selectmode="extended",columns=tabela_head, show="headings")
+
+    # vertical scrollbar
+    vsb = ttk.Scrollbar(framef, orient="vertical", command=tree.yview)
+
+    # horizontal scrollbar
+    hsb = ttk.Scrollbar(framef, orient="horizontal", command=tree.xview)
+
+    tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
+    tree.grid(column=0, row=0, sticky='nsew')
+    vsb.grid(column=1, row=0, sticky='ns')
+    hsb.grid(column=0, row=1, sticky='ew')
+    framef.grid_rowconfigure(0, weight=12)
+
+    hd=["center","center","center","center","center","center"]
+    h=[60,160,170,150,120,120]
+    n=0
+
+    for col in tabela_head:
+        tree.heading(col, text=col.title(), anchor=CENTER)
+        tree.column(col, width=h[n],anchor=hd[n])
+        n+=1
 
 
-quantidade = []
+    # inserindo os itens dentro da tabela
+    for item in lista_itens:
+        tree.insert('', 'end', values=item)
 
-for iten in lista_itens:
-    quantidade.append(iten[6])
+    
+    numeric_quantidade = []
 
-Total_valor = sum(quantidade)
-Total_itens = len(quantidade)
+    for item in lista_itens:
+        try:
+            numeric_value = float(item[6])
+            numeric_quantidade.append(numeric_value)
+        except ValueError:
+            pass
 
-ltotv['text'] = 'R$ {:,.2f}'.format(Total_valor)
-ltotq['text'] = Total_itens
+ 
+    Total_valor = sum(numeric_quantidade)
+    Total_itens = len(numeric_quantidade)
 
+    ltotv['text'] = 'R$ {:,.2f}'.format(Total_valor)
+    ltotq['text'] = Total_itens
+
+mostrar()
 
 janela.mainloop()
 
