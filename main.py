@@ -29,7 +29,7 @@ co8 = '#e06636' #- profit
 janela = Tk()
 janela.title('')
 janela.geometry('800x600')
-janela.configure(background=co2)
+janela.configure(background=co0)
 janela.resizable(width=FALSE, height=FALSE)
 
 style = ttk.Style(janela)
@@ -47,6 +47,7 @@ framef.grid(row=2, column=0, pady=0, padx=1, sticky=NSEW)
 
 #BACK-END
 global tree
+global img, img_str, l_img
 
 #inserir
 def inserir():
@@ -73,14 +74,89 @@ def inserir():
     edesc.delete(0,'end')
     emarca.delete(0,'end') 
     edata.delete(0,'end')
-    evalor.delete(0,'end') 
+    evalor.delete(0,'end')
    
     mostrar()
 
-#escolher img
+#atualizar
+def att():
+    try:
+        global img, img_str, l_img
+        treevd = tree.focus()
+        treevdic = tree.item(treevd)
+        treevl = treevdic['values']
 
-global img, img_str, l_img
-    
+        valor = treevl[0]
+
+        enome.delete(0,'end')
+        edesc.delete(0,'end')
+        emarca.delete(0,'end') 
+        edata.delete(0,'end')
+        evalor.delete(0,'end')
+
+        id = int(treevl[0])
+
+        enome.insert(0,treevl[1])
+        edesc.insert(0,treevl[2])
+        emarca.insert(0,treevl[3]) 
+        edata.insert(0,treevl[4])
+        evalor.insert(0,treevl[5])
+        img_str = treevl[6]
+        def up():
+            global img, img_str, l_img
+
+            nome = enome.get()
+            desc = edesc.get()
+            marca = emarca.get()
+            data = edata.get()
+            valor = evalor.get()
+            img = img_str
+
+            lst_att = [nome, desc, marca, data, valor, img, id]
+
+            if img == '':
+                img = evalor.insert(0,treevl[5])
+            
+            for i in lst_att:
+                if i =='':
+                    messagebox.showerror('ERRO!', 'Preencha todos os campos')
+                    return
+            att_form(lst_att)
+            messagebox.showinfo('SUCESSO','Os dados foram atualizados')
+
+            enome.delete(0,'end')
+            edesc.delete(0,'end')
+            emarca.delete(0,'end') 
+            edata.delete(0,'end')
+            evalor.delete(0,'end')
+
+            bconf.destroy()
+
+            mostrar()
+
+        
+        bconf = Button(framem, command=up, text='Confirmar', width=14, height=2, overrelief=RIDGE, font=('Arial 8 bold'), bg=co2, fg=co4)
+        bconf.place(x=123,y=194)
+
+    except IndexError:
+        messagebox.showerror('Erro', 'Selecione um dos dados!')
+#deletar
+def deletar():
+    try:
+        
+        treevd = tree.focus()
+        treevdic = tree.item(treevd)
+        treevl = treevdic['values']
+
+        valor = treevl[0]
+
+        del_form([valor])
+        messagebox.showinfo('SUCESSO', 'Dados deletados')
+        mostrar()
+    except IndexError:
+        messagebox.showerror('ERRO', 'Selecione um dos dados!')
+
+#escolher img   
 def escolher_img():
     global img, img_str, l_img
 
@@ -91,9 +167,32 @@ def escolher_img():
     img = img.resize((150,150))
     img = ImageTk.PhotoImage(img)
     
-    l_img = Label(framem,image=img, bg=co4, fg=co3)
+    l_img = Label(framem,image=img, bg=co0, fg=co3)
     l_img.place(x=615,y=10)
+    treevd = tree.focus()
+    treevdic = tree.item(treevd)
+    treevl = treevdic['values']
 
+    #valor = [int(treevl[0])]
+#Ver item
+def ver_img():
+    global img, img_str, l_img
+
+
+    treevd = tree.focus()
+    treevdic = tree.item(treevd)
+    treevl = treevdic['values']
+
+    valor = [int(treevl[0])]
+    item = ver_item(valor)
+    img = item[0][6]
+
+    img = Image.open(img)
+    img = img.resize((150,150))
+    img = ImageTk.PhotoImage(img)
+    
+    l_img = Label(framem,image=img, bg=co0, fg=co3)
+    l_img.place(x=615,y=10)
 
 #FRAMEH
 #imagem
@@ -162,19 +261,19 @@ bimg = Button(framem, width=22, command=escolher_img, text='Carregar Imagem', he
 bimg.place(x=100,y=162)
 
 #botao adicionar
-badd = Button(framem, command=inserir, image=add_img, width=105, text='   Adicionar', height=20, compound=LEFT, anchor=NW, overrelief=RIDGE, font=('Arial 8 bold'), bg=co2, fg=co4)
+badd = Button(framem, command=inserir, image=add_img,text='   Adicionar', width=100,  height=32, compound=LEFT, anchor=NW, overrelief=RIDGE, font=('Arial 8 bold'), bg=co2, fg=co4)
 badd.place(x=12,y=194)
 
 #botao atualizar
-batt = Button(framem, image=att_img, width=105, text='   Atualizar', height=20, compound=LEFT, anchor=NW, overrelief=RIDGE, font=('Arial 8 bold'), bg=co2, fg=co4)
+batt = Button(framem, command=att, image=att_img, text='   Atualizar', width=100, height=32, compound=LEFT, anchor=NW, overrelief=RIDGE, font=('Arial 8 bold'), bg=co2, fg=co4)
 batt.place(x=123,y=194)
 
 #botao deletar
-bdel = Button(framem, image=del_img, width=105, text='   Deletar', height=20, compound=LEFT, anchor=NW, overrelief=RIDGE, font=('Arial 8 bold'), bg=co2, fg=co4)
+bdel = Button(framem, command=deletar, image=del_img, text='   Deletar', width=100, height=32, compound=LEFT, anchor=NW, overrelief=RIDGE, font=('Arial 8 bold'), bg=co2, fg=co4)
 bdel.place(x=234,y=194)
 
 #botao ver item
-bvimg = Button(framem, width=10, text='Ver Imagem', height=1, compound=LEFT, anchor=NW, overrelief=RIDGE, font=('Arial 8 bold'), bg=co1, fg=co3)
+bvimg = Button(framem, command=ver_img, width=10, text='Ver Imagem', height=1, compound=LEFT, anchor=NW, overrelief=RIDGE, font=('Arial 8 bold'), bg=co1, fg=co3)
 bvimg.place(x=264,y=162)
 
 #Labels de quantidade e valores
@@ -194,6 +293,7 @@ ltotq1.place(x=380,y=100)
 
 #tabela do banco de dados
 def mostrar():
+    global tree
     tabela_head = ['#Item','Nome', 'Descrição', 'Marca', 'Data', 'Valor']
 
     lista_itens = ver_form()
@@ -233,7 +333,7 @@ def mostrar():
 
     for item in lista_itens:
         try:
-            numeric_value = float(item[6])
+            numeric_value = float(item[5])
             numeric_quantidade.append(numeric_value)
         except ValueError:
             pass
