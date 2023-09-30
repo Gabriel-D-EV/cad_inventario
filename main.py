@@ -173,7 +173,6 @@ def escolher_img():
     treevdic = tree.item(treevd)
     treevl = treevdic['values']
 
-    #valor = [int(treevl[0])]
 #Ver item
 def ver_img():
     global img, img_str, l_img
