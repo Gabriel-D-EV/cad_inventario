@@ -28,6 +28,7 @@ co8 = '#e06636' #- profit
 
 janela = Tk()
 janela.title('')
+janela.bitmap('./imagens/favicon.ico')
 janela.geometry('800x600')
 janela.configure(background=co0)
 janela.resizable(width=FALSE, height=FALSE)
