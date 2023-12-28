@@ -1,4 +1,4 @@
-## INVENTARIO :
+# INVENTARIO :
 
 O Sistema de Cadastro de Inventário é um projeto robusto desenvolvido por mim que visa otimizar a gestão de estoque. Este programa permite aos usuários registrar itens de inventário, juntamente com suas quantidades e valores.
 
